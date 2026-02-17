@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+const { useState, useEffect } = React;
 import { StorageService } from '../services/storageService';
 import { InterviewSession, JobPost, Question, RoleSettings, AdminConfig } from '../types';
 import {
@@ -72,10 +73,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         const job = jobs.find(j => j.id === jobId);
         if (job) {
             const newStatus = job.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
-            const updatedJobs = jobs.map(j => j.id === jobId ? { ...j, status: newStatus } : j);
+            const updatedJobs = jobs.map(j => j.id === jobId ? { ...j, status: newStatus as 'ACTIVE' | 'INACTIVE' } : j);
             setJobs(updatedJobs);
             StorageService.saveJobs(updatedJobs);
-            if (selectedJob?.id === jobId) setSelectedJob({ ...selectedJob, status: newStatus });
+            if (selectedJob?.id === jobId) setSelectedJob({ ...selectedJob, status: newStatus as 'ACTIVE' | 'INACTIVE' });
         }
     };
 

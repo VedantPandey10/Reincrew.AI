@@ -1,5 +1,5 @@
-
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+const { useState, useEffect } = React;
 import { Candidate, JobPost } from '../types';
 import { StorageService } from '../services/storageService';
 import { User, ArrowRight, ShieldCheck, PlayCircle, Shield, Briefcase } from 'lucide-react';
@@ -41,85 +41,86 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onStart, onAdminLogin 
       <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-500/10 blur-[120px] rounded-full animate-pulse-slow font-delay-1000"></div>
 
       <div className="w-full max-w-md animate-fade-in z-10">
-        <div className="glass-card bg-white/40 dark:bg-slate-900/40 rounded-3xl shadow-2xl overflow-hidden border border-white/20 dark:border-white/5 transition-colors">
-          <div className="p-8 text-center bg-gradient-to-br from-brand-600 to-brand-800 dark:from-brand-900 dark:to-slate-950 text-white relative overflow-hidden">
+        <div className="bg-slate-900/90 dark:bg-slate-950/90 backdrop-blur-xl rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/10 dark:border-white/5 transition-all">
+          <div className="p-10 text-center bg-gradient-to-br from-brand-600 to-brand-800 dark:from-brand-900 dark:to-slate-950 text-white relative overflow-hidden">
             {/* Morphing glow effect */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-2xl rounded-full translate-x-12 -translate-y-12 animate-morph"></div>
 
             <div className="relative z-10">
-              <h2 className="text-3xl font-black mb-1 tracking-tight">Reicrew AI</h2>
-              <p className="text-brand-100/80 text-xs font-medium uppercase tracking-[0.2em]">Automated Intelligence Platform</p>
+              <h2 className="text-4xl font-black mb-1 tracking-tighter">Reicrew AI</h2>
+              <p className="text-brand-100/60 text-[10px] font-bold uppercase tracking-[0.3em]">Smart Interviewing System</p>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-8 space-y-6">
+          <form onSubmit={handleSubmit} className="p-10 space-y-8">
             <div className="text-center space-y-2">
-              <h3 className="text-xl font-bold text-slate-800 dark:text-white">Welcome Back</h3>
-              <p className="text-slate-500 dark:text-slate-400 text-xs text-balance">
-                Elevate your career. Start your AI-powered interview journey today.
+              <h3 className="text-2xl font-black text-white tracking-tight">Candidate Launchpad</h3>
+              <p className="text-slate-400 text-xs font-medium leading-relaxed">
+                Unlock your potential. Start your AI-optimized professional assessment.
               </p>
             </div>
 
-            <div className="space-y-5">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Candidate Name</label>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Candidate Identity</label>
                 <div className="relative group">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors" size={18} />
+                  <User className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-brand-400 transition-colors" size={20} />
                   <input
                     name="name"
                     value={name}
+                    required
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:border-brand-500 dark:focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 dark:focus:ring-brand-400/5 outline-none transition-all text-slate-800 dark:text-slate-100"
-                    placeholder="e.g. John Doe"
+                    className="w-full pl-14 pr-5 py-4 rounded-2xl bg-slate-800/50 border border-slate-700/50 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all text-white placeholder:text-slate-600 font-medium"
+                    placeholder="Enter your full name"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Interview Position</label>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Target Role</label>
                 <div className="relative group">
-                  <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors" size={18} />
+                  <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-brand-400 transition-colors" size={20} />
                   <select
                     value={selectedJobId}
                     onChange={(e) => setSelectedJobId(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:border-brand-500 dark:focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 dark:focus:ring-brand-400/5 outline-none transition-all text-slate-800 dark:text-slate-100 appearance-none cursor-pointer"
+                    className="w-full pl-14 pr-5 py-4 rounded-2xl bg-slate-800/50 border border-slate-700/50 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all text-white appearance-none cursor-pointer font-medium"
                   >
                     {jobs.map(job => (
-                      <option key={job.id} value={job.id} className="dark:bg-slate-900">{job.title}</option>
+                      <option key={job.id} value={job.id} className="bg-slate-900">{job.title}</option>
                     ))}
                   </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                    <ArrowRight size={16} className="rotate-90" />
+                  <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-focus-within:text-brand-400 transition-colors">
+                    <ArrowRight size={18} className="rotate-90" />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-brand-50 dark:bg-brand-900/20 border border-brand-100 dark:border-brand-800/30 p-4 rounded-2xl flex gap-4 transition-colors">
-              <div className="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center text-brand-600 dark:text-brand-400 shrink-0">
-                <ShieldCheck size={20} />
+            <div className="bg-brand-500/5 border border-brand-500/10 p-5 rounded-3xl flex gap-4 transition-all">
+              <div className="w-12 h-12 rounded-2xl bg-brand-500/10 flex items-center justify-center text-brand-400 shrink-0 border border-brand-500/20">
+                <ShieldCheck size={24} />
               </div>
-              <div className="text-[11px] leading-relaxed">
-                <p className="font-bold text-brand-900 dark:text-brand-300 uppercase mb-0.5 tracking-tight">Verified Assessment</p>
-                <p className="text-brand-700 dark:text-brand-400/80 italic">Your session is proctored by AI to ensure integrity and fair evaluation.</p>
+              <div className="text-xs leading-relaxed">
+                <p className="font-black text-brand-300 uppercase mb-0.5 tracking-tight">Secure Assessment</p>
+                <p className="text-slate-400 font-medium">Your session is proctored to ensure a fair and consistent evaluation process.</p>
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 text-white font-bold py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-xl shadow-brand-500/20 dark:shadow-brand-500/10 hover:scale-[1.02] active:scale-95 group"
+              className="w-full h-16 bg-brand-600 hover:bg-brand-700 text-white font-black rounded-2xl transition-all flex items-center justify-center gap-3 shadow-2xl shadow-brand-500/20 active:scale-[0.98] group"
             >
-              <span>Get Started</span>
-              <PlayCircle size={20} className="group-hover:translate-x-1 transition-transform" />
+              <span className="text-lg tracking-tight">Begin Interview</span>
+              <PlayCircle size={22} className="group-hover:translate-x-1 transition-transform" />
             </button>
 
             <div className="pt-2 flex flex-col items-center">
               <button
                 type="button"
                 onClick={onAdminLogin}
-                className="text-slate-400 dark:text-slate-500 hover:text-brand-600 dark:hover:text-brand-400 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all py-3 px-6 rounded-2xl border border-transparent hover:border-slate-100 dark:hover:border-slate-800 hover:bg-white/50 dark:hover:bg-slate-800/50"
+                className="text-slate-500 hover:text-brand-400 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] transition-all py-3 px-8 rounded-full border border-transparent hover:border-slate-800 hover:bg-slate-800/50"
               >
-                <Shield size={12} /> Portal Access
+                <Shield size={14} /> Admin Gateway
               </button>
             </div>
           </form>

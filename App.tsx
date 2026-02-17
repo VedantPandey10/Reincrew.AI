@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+const { useState, useEffect } = React;
 import { LoginScreen } from './components/LoginScreen';
 import { ProfileSetup } from './components/ProfileSetup';
 import { CameraCheckScreen } from './components/CameraCheckScreen';
@@ -30,6 +31,10 @@ export default function App() {
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
+    console.log("Environment check:", {
+      VITE_API_KEY: import.meta.env.VITE_API_KEY,
+      ALL_ENV: import.meta.env
+    });
     if (!import.meta.env.VITE_API_KEY) {
       console.warn("Missing VITE_API_KEY in environment variables.");
     }
@@ -124,7 +129,7 @@ export default function App() {
   const showHeader = view !== AppView.ADMIN;
 
   return (
-    <div className={`h-screen w-screen flex flex-col overflow-hidden font-sans transition-colors duration-300 ${theme === 'dark' ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+    <div className={`h-screen w-screen flex flex-col overflow-hidden font-sans transition-colors duration-300 ${theme === 'dark' ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
       }`}>
       {showHeader && (
         <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex-none flex items-center justify-between shadow-sm z-50 h-16 sticky top-0 transition-colors">
