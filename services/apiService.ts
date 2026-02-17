@@ -3,7 +3,18 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { Candidate, EvaluationResult, Question, RoleSettings, VisualMetrics } from "../types";
 import { StorageService } from "./storageService";
 
-const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
+let aiInstance: GoogleGenAI | null = null;
+const getAI = () => {
+  if (!aiInstance) {
+    const apiKey = import.meta.env.VITE_API_KEY || process.env.VITE_API_KEY;
+    if (!apiKey || apiKey === 'PLACEHOLDER_API_KEY') {
+      throw new Error("AI Service Configuration Missing. VITE_API_KEY is not set.");
+    }
+    aiInstance = new GoogleGenAI({ apiKey });
+  }
+  return aiInstance;
+};
+
 const MODEL_FAST = "gemini-2.5-flash";
 
 export const startInterview = async (candidate: Candidate): Promise<{ question: Question; totalQuestions: number; settings?: RoleSettings }> => {
@@ -103,7 +114,7 @@ export const submitAnswer = async (
   }
 
   try {
-    const evalResponse = await ai.models.generateContent({
+    const evalResponse = await getAI().models.generateContent({
       model: MODEL_FAST,
       contents: evalPrompt,
       config: {
