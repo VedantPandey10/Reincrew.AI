@@ -23,13 +23,14 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
   }
 
   public render() {
-    if (this.state.hasError) {
+    const { hasError, error } = this.state;
+    if (hasError) {
       return (
         <div style={{ padding: '20px', color: 'red', background: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', fontFamily: 'sans-serif' }}>
           <h1>Reicrew AI - Diagnostic</h1>
           <p>The application crashed during initialization on Vercel.</p>
           <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', textAlign: 'left', background: '#f5f5f5', padding: '15px', borderRadius: '8px', fontSize: '12px' }}>
-            {this.state.error?.toString()}
+            {error?.toString()}
           </pre>
           <button onClick={() => window.location.reload()} style={{ marginTop: '20px', padding: '10px 20px', cursor: 'pointer' }}>Reload Page</button>
         </div>
