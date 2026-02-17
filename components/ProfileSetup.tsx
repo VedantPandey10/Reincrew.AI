@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Candidate } from '../types';
-import { User, Mail, Phone, CreditCard, Camera, ShieldCheck, ArrowRight } from 'lucide-react';
+import { User, Mail, Phone, CreditCard, Camera, ShieldCheck, ArrowRight, RefreshCw, XCircle } from 'lucide-react';
 
 interface ProfileSetupProps {
   initialData: Candidate;
@@ -19,6 +19,61 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ initialData, onCompl
   const [pfpPreview, setPfpPreview] = useState<string | null>(initialData.profilePhoto || null);
   const [idPreview, setIdPreview] = useState<string | null>(initialData.idCardImage || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Camera States
+  const [isCameraMode, setIsCameraMode] = useState(false);
+  const [isStreamActive, setIsStreamActive] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  // Cleanup camera on unmount
+  useEffect(() => {
+    return () => {
+      stopCamera();
+    };
+  }, []);
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 640, height: 480, facingMode: 'user' }
+      });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        streamRef.current = stream;
+        setIsStreamActive(true);
+      }
+    } catch (err) {
+      console.error("Camera access failed", err);
+      alert("Please allow camera access to take a selfie.");
+      setIsCameraMode(false);
+    }
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    setIsStreamActive(false);
+  };
+
+  const captureSelfie = () => {
+    if (videoRef.current) {
+      const canvas = document.createElement('canvas');
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(videoRef.current, 0, 0);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        setPfpPreview(dataUrl);
+        setFormData(prev => ({ ...prev, profilePhoto: dataUrl }));
+        stopCamera();
+        setIsCameraMode(false);
+      }
+    }
+  };
 
   // Helper to compress images for localStorage
   const compressImage = (file: File): Promise<string> => {
@@ -229,30 +284,77 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ initialData, onCompl
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 pt-2">
-                    {/* Profile Photo Upload */}
+                    {/* Profile Photo Upload / Camera */}
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Live Selfie</label>
+                      <div className="flex justify-between items-center ml-1">
+                        <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Live Selfie</label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const next = !isCameraMode;
+                            setIsCameraMode(next);
+                            if (next) startCamera();
+                            else stopCamera();
+                          }}
+                          className="text-[9px] font-black text-brand-500 hover:text-brand-600 transition-colors bg-brand-500/10 px-2 py-0.5 rounded-full"
+                        >
+                          {isCameraMode ? 'SWITCH TO UPLOAD' : 'USE WEBCAM'}
+                        </button>
+                      </div>
+
                       <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-3xl p-2 text-center hover:bg-brand-50/50 dark:hover:bg-brand-900/10 transition-all relative group h-36 flex flex-col justify-center items-center overflow-hidden">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                          onChange={(e) => handleFileChange(e, 'PFP')}
-                        />
-                        {pfpPreview ? (
-                          <div className="relative w-full h-full rounded-2xl overflow-hidden animate-fade-in">
-                            <img src={pfpPreview} alt="Profile" className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <Camera className="text-white" size={24} />
+                        {isCameraMode ? (
+                          <div className="relative w-full h-full rounded-2xl overflow-hidden bg-black">
+                            <video
+                              ref={videoRef}
+                              autoPlay
+                              playsInline
+                              muted
+                              className="w-full h-full object-cover transform scale-x-[-1]"
+                            />
+                            {isStreamActive && (
+                              <button
+                                type="button"
+                                onClick={captureSelfie}
+                                className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-brand-600 text-white p-2 rounded-full shadow-lg hover:bg-brand-700 active:scale-90 transition-all z-20"
+                              >
+                                <Camera size={18} />
+                              </button>
+                            )}
+                            <div className="absolute top-2 right-2 z-20">
+                              <button
+                                type="button"
+                                onClick={() => { setIsCameraMode(false); stopCamera(); }}
+                                className="text-white/50 hover:text-white transition-colors"
+                              >
+                                <XCircle size={18} />
+                              </button>
                             </div>
                           </div>
                         ) : (
-                          <div className="flex flex-col items-center gap-1 group-hover:scale-110 transition-transform">
-                            <div className="w-12 h-12 rounded-2xl bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center text-brand-600 dark:text-brand-400">
-                              <User size={24} />
-                            </div>
-                            <p className="text-[10px] font-black text-brand-700 dark:text-brand-400 uppercase tracking-widest mt-1">Upload</p>
-                          </div>
+                          <>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                              onChange={(e) => handleFileChange(e, 'PFP')}
+                            />
+                            {pfpPreview ? (
+                              <div className="relative w-full h-full rounded-2xl overflow-hidden animate-fade-in group">
+                                <img src={pfpPreview} alt="Profile" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                  <RefreshCw className="text-white" size={24} />
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex flex-col items-center gap-1 group-hover:scale-110 transition-transform">
+                                <div className="w-12 h-12 rounded-2xl bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center text-brand-600 dark:text-brand-400">
+                                  <User size={24} />
+                                </div>
+                                <p className="text-[10px] font-black text-brand-700 dark:text-brand-400 uppercase tracking-widest mt-1">Upload</p>
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
