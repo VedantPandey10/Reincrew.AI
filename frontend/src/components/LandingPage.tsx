@@ -37,7 +37,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 px-6 py-8 flex justify-between items-center bg-transparent">
+      <nav className="fixed top-0 w-full z-50 px-6 py-8 flex justify-start items-center bg-transparent gap-8">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/20">
             <BrainCircuit className="text-white" size={24} />
